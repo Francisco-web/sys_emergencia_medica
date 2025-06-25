@@ -12,12 +12,12 @@ $dashboard = new DashboardHelper();
 
 $atendimento = new Atendimento();
 
-if (!$auth->estaAutenticado() || $auth->tipoUsuario() !== 'Recepcionista') {
+if (!$auth->estaAutenticado() || $auth->tipoUsuario() !== 'Enfermeiro(a)') {
     header("Location: ../index.php");
     exit;
 }
 
-$titulo = "Painel Recepcionista";
+$titulo = "Lista de Pacientes ";
 
 require_once '../core/header.php';
 
@@ -38,7 +38,7 @@ require_once '../core/menu.php';
           <div class="content-wrapper">
             <!-- Content -->
             <div class="container-xxl flex-grow-1 container-p-y">
-              <h4 class="fw-bold py-3 mb-4">Lista de Pacientes em espera</h4>
+              <h4 class="fw-bold py-3 mb-4">Lista de Pacientes para atendimento</h4>
                 <?php
                     if (isset($_SESSION["sucesso"])) {
                         echo $_SESSION["sucesso"];
@@ -55,11 +55,12 @@ require_once '../core/menu.php';
 
                         <!-- Basic Bootstrap Table -->
                         <div class="card">
-                            <h5 class="card-header">Todos os Pacientes em espera</h5>
+                            <h5 class="card-header">Todos os Pacientes</h5>
                             <div class="table-responsive text-nowrap">
                             <table class="table">
                                 <thead>
                                 <tr>
+                                    <th>Ficha Nº</th>
                                     <th>Nome</th>
                                     <th>Data de nascimento</th>
                                     <th>Genero</th>
@@ -75,7 +76,9 @@ require_once '../core/menu.php';
                                         $dados_pacientes_atendimento = $atendimento->listar();
                                         foreach ($dados_pacientes_atendimento as $cada_paciente_atendimento) {
                                     ?>
+
                                     <tr>
+                                        <td><i class="fab fa-angular fa-lg text-danger me-3"></i> <strong><?php echo $cada_paciente_atendimento['fichaNumero']?></strong></td>
                                         <td><i class="fab fa-angular fa-lg text-danger me-3"></i> <strong><?php echo $cada_paciente_atendimento['nome']?></strong></td>
                                         <td><?php echo $cada_paciente_atendimento['data_nascimento']?></td>
                                         <td><?php echo $cada_paciente_atendimento['genero']?></td>
@@ -88,6 +91,8 @@ require_once '../core/menu.php';
                                                     echo '<span class="badge bg-label-warning me-1">'. $cada_paciente_atendimento["prioridade"] .'</span>';
                                                 }elseif ($cada_paciente_atendimento['prioridade'] == 'Baixa') {
                                                     echo '<span class="badge bg-label-primary me-1">'. $cada_paciente_atendimento["prioridade"] .'</span>';
+                                                }elseif ($cada_paciente_atendimento['prioridade'] == 'Não definido') {
+                                                    echo '<span class="badge bg-label-secondary me-1">'. $cada_paciente_atendimento["prioridade"] .'</span>';
                                                 }
                                             ?>
                                         </td>
@@ -98,13 +103,26 @@ require_once '../core/menu.php';
                                                 echo '<span class="badge bg-label-primary me-1">'. $cada_paciente_atendimento["atendido"] .'</span>';
                                             }elseif ($cada_paciente_atendimento['atendido'] == 'Em atendimento') {
                                                 echo '<span class="badge bg-label-success me-1">'. $cada_paciente_atendimento["atendido"] .'</span>';
-                                            }elseif ($cada_paciente_atendimento['atendido'] == 'Não atendido') {
+                                            }elseif ($cada_paciente_atendimento['atendido'] == 'Não Atendido') {
                                                 echo '<span class="badge bg-label-danger me-1">'. $cada_paciente_atendimento["atendido"] .'</span>';
                                             }
                                             ?>
                                         </td>
                                         <td><?php echo $cada_paciente_atendimento['data_entrada']?></td>
                                         <td><?php echo $cada_paciente_atendimento['data_saida']?></td>
+                                        <td>
+                                        <div class="dropdown">
+                                            <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
+                                            <i class="bx bx-dots-vertical-rounded"></i>
+                                            </button>
+                                            <div class="dropdown-menu">
+                                            <a class="dropdown-item" href="alterar_dados_paciente.php?id=<?php echo $cada_paciente_atendimento['id']?>&fila"
+                                                ><i class="bx bx-edit-alt me-1"></i> Atender</a
+                                            >
+                                            </div>
+                                        </div>
+                                        </td>
+
                                     </tr>
                                     <?php }?>
                                 </tbody>

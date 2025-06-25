@@ -33,7 +33,7 @@ class Paciente {
     }
 
     // Criar novo paciente
-    public function criar($nome, $genero, $tipo_documento, $documento_numero, $data_nascimento, $telefone,$prioridade,$atendido):bool {
+    public function criar($nome, $genero, $tipo_documento, $documento_numero, $data_nascimento, $telefone):bool {
         
 
         $stmt = $this->conexao->prepare("INSERT INTO `pacientes`(`nome`, `data_nascimento`, `genero`, `telefone`, `tipo_documento`, `id_documento`) 
@@ -46,16 +46,30 @@ class Paciente {
         $stmt->bindParam(':id_documento',$documento_numero, PDO::PARAM_STR);
         $stmt->execute();
 
-        $ultimo_id_paciente= $this->conexao->lastInsertId();
+       // Gerar 6 dígitos únicos (de 0 a 9)
+        $digitos = [];
 
-        //registrar atendidmento
-        $stmt = $this->conexao->prepare("INSERT INTO `atendimentos`(`paciente_id`, `data_entrada`, `prioridade`, `atendido`) 
-                                     VALUES (:id_paciente, Now(),:prioridade,:atendido)");
-        $stmt->bindParam(':id_paciente',$ultimo_id_paciente, PDO::PARAM_INT);
-        $stmt->bindParam(':prioridade',$prioridade, PDO::PARAM_STR);
-        $stmt->bindParam(':atendido',$atendido, PDO::PARAM_STR);
+        while (count($digitos) < 6) {
+            $numero = rand(0, 9);
+            if (!in_array($numero, $digitos)) {
+                $digitos[] = $numero;
+            }
+        }
+
+        // Junta os dígitos em uma string como "487130"
+        $fichaNumero = implode('', $digitos);
+
+        // Obtém o ID do último paciente cadastrado
+        $ultimo_id_paciente = $this->conexao->lastInsertId();
+
+        // Registrar atendimento com fichaNumero
+        $stmt = $this->conexao->prepare("INSERT INTO `atendimentos`(`paciente_id`, `fichaNumero`, `data_entrada`) 
+                                        VALUES (:id_paciente, :fichaNumero, NOW())");
+        $stmt->bindParam(':id_paciente', $ultimo_id_paciente, PDO::PARAM_INT);
+        $stmt->bindParam(':fichaNumero', $fichaNumero, PDO::PARAM_STR);
 
         return $stmt->execute();
+
 
     }
 

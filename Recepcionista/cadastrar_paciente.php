@@ -31,10 +31,6 @@ if (isset($_POST['btn_salvar']) && $_SERVER["REQUEST_METHOD"] == "POST")
     $data_nascimento = htmlspecialchars($_POST['data_nascimento']); 
     $telefone = htmlspecialchars($_POST['telefone']);
 
-    //atendimento
-    $prioridade = htmlspecialchars($_POST['prioridade']); 
-    $atendido = htmlspecialchars($_POST['atendido']);
-
     // Validação 
     if (empty($nome)) {
         $_SESSION['erro'] = "<div class='alert alert-danger alert-dismissible' role='alert'>O nome é obrigatório.<button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button></div>";
@@ -46,17 +42,13 @@ if (isset($_POST['btn_salvar']) && $_SERVER["REQUEST_METHOD"] == "POST")
         $_SESSION['erro'] = "<div class='alert alert-danger alert-dismissible' role='alert'>Data de nascimento inválida. Use o formato YYYY-MM-DD.<button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button></div>";
     }elseif (!preg_match('/^\+?[0-9]{7,15}$/', $telefone)) {
        $_SESSION['erro'] = "<div class='alert alert-danger alert-dismissible' role='alert'>Número de telefone inválido.<button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button></div>";
-    }elseif (empty($prioridade)) {
-        $_SESSION['erro'] = "<div class='alert alert-danger alert-dismissible' role='alert'>Prioridade de Atendimento não selecionada.<button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button></div>";
-    }elseif (empty($atendido)) {
-       $_SESSION['erro'] = "<div class='alert alert-danger alert-dismissible' role='alert'>Seleciona o estado de atendiemnto do paciente.<button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button></div>";
     }else{
 
 
         if ($paciente->existePaciente($nome, $documento_numero,isset($id_paciente))) {
             $_SESSION['erro']="<div class='alert alert-danger alert-dismissible' role='alert'>Paciente já cadastrado.<button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button></div>";
         }else {
-            $resultado = $paciente->criar($nome, $genero, $tipo_documento, $documento_numero, $data_nascimento, $telefone,$prioridade,$atendido);
+            $resultado = $paciente->criar($nome, $genero, $tipo_documento, $documento_numero, $data_nascimento, $telefone);
 
             if ($resultado) {
                 $_SESSION['sucesso']= "<div class='alert alert-success alert-dismissible' role='alert'>Paciente cadastrado com sucesso!<button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button></div>";
@@ -154,36 +146,6 @@ if (isset($_POST['btn_salvar']) && $_SERVER["REQUEST_METHOD"] == "POST")
                             </div>
                             </div>
 
-                            <hr class="my-5">
-                            <div class="row mb-3">
-                                <label class="col-sm-2 col-form-label" for="basic-default-name">Dados de Atendimento</label>
-                            </div>
-                            
-                            <div class="row mb-3">
-                                <label class="col-sm-2 col-form-label" for="basic-default-email">Prioridade de Atendimento</label>
-                                <div class="col-sm-10">
-                                    <div class="input-group input-group-merge">
-                                        <select name="prioridade" class="form-control" id="">
-                                            <option value="">Seleciona</option>
-                                            <option value="Alta">Alta</option>
-                                            <option value="Baixa">Baixa</option>
-                                            <option value="Média">Média</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row mb-3">
-                            
-                            <div class="row mb-3">
-                            <label class="col-sm-2 col-form-label" for="basic-default-phone">Atendido?</label>
-                            <div class="col-sm-10">
-                                <select name="atendido" id="" class="form-control phone-mask">
-                                    <option value="">Seleciona</option>
-                                    <option value="Não atendido">Ainda Não</option>
-                                    <option value="Atendido">Sim, Atendido</option>
-                                </select>
-                            </div>
-                            </div>
                             <div class="row justify-content-end">
                             <div class="col-sm-10">
                                 <button type="submit" name="btn_salvar" class="btn btn-primary">Salvar</button>

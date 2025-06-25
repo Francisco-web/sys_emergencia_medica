@@ -34,7 +34,6 @@ class Atendimento {
 
     // Criar novo paciente
     public function criar($nome, $genero, $tipo_documento, $documento_numero, $data_nascimento, $telefone):bool {
-        
 
         $stmt = $this->conexao->prepare("INSERT INTO `pacientes`(`nome`, `data_nascimento`, `genero`, `telefone`, `tipo_documento`, `id_documento`) 
                                      VALUES (:nome, :data_nascimento, :genero, :telefone, :tipo_documento,:id_documento)");
@@ -60,6 +59,16 @@ class Atendimento {
         return $stmt->execute();
     }
 
+      public function criarFicha($fichaNumero, $id_atendimento, $id_enfermeiro):bool {
+
+        $stmt = $this->conexao->prepare("INSERT INTO `ficha_de_atendimento`(`ficha`, `id_atendimento`, `id_enfermeiro`) 
+                                     VALUES (:fichaNumero, :id_atendimeto, :id_enfermeiro)");
+        $stmt->bindParam(':fichaNumero',$fichaNumero, PDO::PARAM_STR);
+        $stmt->bindParam(':id_enfermeiro',$id_enfermeiro, PDO::PARAM_INT);
+        $stmt->bindParam(':id_atendimeto',$id_atendimento, PDO::PARAM_INT);
+        return $stmt->execute();
+    }
+
     // Buscar paciente por ID
     public function buscar($id) {
         $stmt = $this->conexao->prepare("SELECT * FROM atendimentos WHERE id = :id");
@@ -70,7 +79,7 @@ class Atendimento {
 
     // Listar todos os pacientes
     public function listar() {
-        $stmt = $this->conexao->query("SELECT atm.id,atm.prioridade,atm.sintomas,atm.sinais_vitais,atm.data_entrada,atm.data_saida,atm.atendido,pc.nome,pc.data_nascimento,pc.genero FROM atendimentos atm join pacientes pc ON atm.paciente_id = pc.id ORDER BY prioridade DESC");
+        $stmt = $this->conexao->query("SELECT atm.id,atm.prioridade,atm.sintomas,atm.fichaNumero,atm.sinais_vitais,atm.data_entrada,atm.data_saida,atm.atendido,pc.nome,pc.data_nascimento,pc.genero FROM atendimentos atm join pacientes pc ON atm.paciente_id = pc.id ORDER BY prioridade ,data_entrada DESC");
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
