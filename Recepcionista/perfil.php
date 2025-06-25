@@ -19,7 +19,7 @@ $titulo = "Painel Recepcionista";
 require_once '../core/header.php';
 
 //menu
-//require_once '../core/menu.php';
+require_once '../core/menu.php';
 
 //cadastrar paciente
 if (isset($_POST['salvar_alteracao']) && $_SERVER["REQUEST_METHOD"] == "POST") 
@@ -74,7 +74,7 @@ if (isset($_POST['salvar_alteracao']) && $_SERVER["REQUEST_METHOD"] == "POST")
 
           $senha = password_hash($nova_senha, PASSWORD_DEFAULT);
 
-          $resultado = $usuario->atualizar($id_usuario,isset($nome), isset($email),isset($telefone),isset($senha),isset($perfil));
+          $resultado = $usuario->atualizar($id_usuario,isset($nome), isset($email),isset($telefone),$senha,isset($perfil));
 
           if ($resultado) {
               $_SESSION['sucesso']= "<div class='alert alert-success alert-dismissible' role='alert'>Nova senha actualizada com sucesso!<button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button></div>";
@@ -115,11 +115,6 @@ if (isset($_POST['salvar_alteracao']) && $_SERVER["REQUEST_METHOD"] == "POST")
                   <ul class="nav nav-pills flex-column flex-md-row mb-3">
                     <li class="nav-item">
                       <a class="nav-link active" href="javascript:void(0);"><i class="bx bx-user me-1"></i> Perfil</a>
-                    </li>
-                    <li class="nav-item">
-                      <a class="nav-link" href="pages-account-settings-notifications.html"
-                        ><i class="bx bx-lock me-1"></i> Mudar Senha</a
-                      >
                     </li>
                   </ul>
                   <div class="card mb-4">
@@ -224,11 +219,8 @@ if (isset($_POST['salvar_alteracao']) && $_SERVER["REQUEST_METHOD"] == "POST")
                     
                     <div class="card-body">
                         <?php
-                            $id = $auth->UsuarioID();
-                            $dados_usuario = $usuario->buscar($id);
-                            $senha = 123456;
-                            $senha =password_hash($senha, PASSWORD_DEFAULT);
-                            echo $senha;
+                          $id = $auth->UsuarioID();
+                          $dados_usuario = $usuario->buscar($id);
                         ?>
                       <form id="formAccountSettings" method="POST" onsubmit="return true">
                         <div class="row">

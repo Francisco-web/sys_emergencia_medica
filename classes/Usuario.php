@@ -65,7 +65,7 @@ class Usuario {
         
         if ($id_usuario && $telefone && $nome && $email) {
 
-             $stmt = $this->conexao->prepare("UPDATE `usuarios` SET `nome`=:nome,`email`=:email,`telefone`=:telefone WHERE id = :id");
+            $stmt = $this->conexao->prepare("UPDATE `usuarios` SET `nome`=:nome,`email`=:email,`telefone`=:telefone WHERE id = :id");
             $stmt->bindParam(':nome',$nome, PDO::PARAM_STR);
             $stmt->bindParam(':telefone',$telefone, PDO::PARAM_STR);
             $stmt->bindParam(':email',$email, PDO::PARAM_STR);
@@ -73,12 +73,13 @@ class Usuario {
             return $stmt->execute();
 
         }else if ($id_usuario && $senha) {
-
-             $stmt = $this->conexao->prepare("UPDATE `usuarios` SET `senha`=:senha WHERE id = :id");
+            // Atualiza apenas a senha
+            $stmt = $this->conexao->prepare("UPDATE `usuarios` SET `senha`=:senha WHERE id = :id");
             $stmt->bindParam(':senha',$senha, PDO::PARAM_STR);
             $stmt->bindParam(':id',$id_usuario, PDO::PARAM_INT);
             return $stmt->execute();
         }else {
+
             $stmt = $this->conexao->prepare("UPDATE `usuarios` SET `nome`=:nome,`email`=:email,`telefone`=:telefone,`senha`=:senha,`perfil`=:perfil
             WHERE id = :id");
             $stmt->bindParam(':nome',$nome, PDO::PARAM_STR);
