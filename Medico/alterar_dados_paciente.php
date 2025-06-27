@@ -12,7 +12,7 @@ $dashboard = new DashboardHelper();
 
 $Atendimento = new Atendimento();
 
-if (!$auth->estaAutenticado() || $auth->tipoUsuario() !== 'Enfermeiro(a)') {
+if (!$auth->estaAutenticado() || $auth->tipoUsuario() !== 'Medico(a)') {
     header("Location: ../index.php");
     exit;
 }

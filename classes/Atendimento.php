@@ -32,24 +32,10 @@ class Atendimento {
         }
     }
 
-    // Criar novo paciente
-    public function criar($nome, $genero, $tipo_documento, $documento_numero, $data_nascimento, $telefone):bool {
-
-        $stmt = $this->conexao->prepare("INSERT INTO `pacientes`(`nome`, `data_nascimento`, `genero`, `telefone`, `tipo_documento`, `id_documento`) 
-                                     VALUES (:nome, :data_nascimento, :genero, :telefone, :tipo_documento,:id_documento)");
-        $stmt->bindParam(':nome',$nome, PDO::PARAM_STR);
-        $stmt->bindParam(':data_nascimento',$data_nascimento, PDO::PARAM_STR);
-        $stmt->bindParam(':genero',$genero, PDO::PARAM_STR);
-        $stmt->bindParam(':telefone',$telefone, PDO::PARAM_STR);
-        $stmt->bindParam(':tipo_documento',$tipo_documento, PDO::PARAM_STR);
-        $stmt->bindParam(':id_documento',$documento_numero, PDO::PARAM_STR);
-        return $stmt->execute();
-    }
-
     // Atualizar paciente
     public function atualizar($id_atendimento, $prioridade, $atendido, $sinais_vitais, $sintomas){
         
-        $stmt = $this->conexao->prepare("UPDATE `atendimentos` SET `sintomas`=:sintomas,`sinais_vitais`=:sinais_vitais,`data_saida`=NOW(),`prioridade`=:prioridade,`atendido`=:atendido
+        $stmt = $this->conexao->prepare("UPDATE `atendimentos` SET `sintomas`=:sintomas,`sinais_vitais`=:sinais_vitais,`prioridade`=:prioridade,`atendido`=:atendido
         WHERE id = :id");
         $stmt->bindParam(':prioridade',$prioridade, PDO::PARAM_STR);
         $stmt->bindParam(':atendido',$atendido, PDO::PARAM_STR);
@@ -59,14 +45,24 @@ class Atendimento {
         return $stmt->execute();
     }
 
-      public function criarFicha($fichaNumero, $id_atendimento, $id_enfermeiro):bool {
+    public function atender($id_atendimento, $id_enfermeiro,$prioridade, $atendido, $sinais_vitais, $sintomas) {
 
-        $stmt = $this->conexao->prepare("INSERT INTO `ficha_de_atendimento`(`ficha`, `id_atendimento`, `id_enfermeiro`) 
-                                     VALUES (:fichaNumero, :id_atendimeto, :id_enfermeiro)");
-        $stmt->bindParam(':fichaNumero',$fichaNumero, PDO::PARAM_STR);
-        $stmt->bindParam(':id_enfermeiro',$id_enfermeiro, PDO::PARAM_INT);
+        $stmt = $this->conexao->prepare("UPDATE `atendimentos` SET `sintomas`=:sintomas,`sinais_vitais`=:sinais_vitais,`data_saida`=NOW(),`prioridade`=:prioridade,`atendido`=:atendido
+        WHERE id = :id");
+        $stmt->bindParam(':prioridade',$prioridade, PDO::PARAM_STR);
+        $stmt->bindParam(':atendido',$atendido, PDO::PARAM_STR);
+        $stmt->bindParam(':sinais_vitais',$sinais_vitais, PDO::PARAM_STR);
+        $stmt->bindParam(':sintomas',$sintomas, PDO::PARAM_STR);
+        $stmt->bindParam(':id',$id_atendimento, PDO::PARAM_STR);
+        
+        if($stmt->execute()){
+         $stmt = $this->conexao->prepare("INSERT INTO `ficha_de_atendimento`(`id_atendimento`, `id_usuario`) 
+                                        VALUES (:id_atendimeto, :id_usuario)");
+        $stmt->bindParam(':id_usuario',$id_enfermeiro, PDO::PARAM_INT);
         $stmt->bindParam(':id_atendimeto',$id_atendimento, PDO::PARAM_INT);
         return $stmt->execute();
+        }
+        return false;
     }
 
     // Buscar paciente por ID
@@ -79,7 +75,31 @@ class Atendimento {
 
     // Listar todos os pacientes
     public function listar() {
-        $stmt = $this->conexao->query("SELECT atm.id,atm.prioridade,atm.sintomas,atm.fichaNumero,atm.sinais_vitais,atm.data_entrada,atm.data_saida,atm.atendido,pc.nome,pc.data_nascimento,pc.genero FROM atendimentos atm join pacientes pc ON atm.paciente_id = pc.id ORDER BY prioridade ,data_entrada DESC");
+        $stmt = $this->conexao->query("SELECT atm.id,atm.prioridade,atm.sintomas,atm.fichaNumero,atm.sinais_vitais,atm.data_entrada,atm.data_saida,atm.atendido,pc.nome,pc.data_nascimento,pc.genero FROM atendimentos atm join pacientes pc ON atm.paciente_id = pc.id ORDER BY atm.data_entrada DESC, atm.prioridade DESC");
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function listarPacientesNaoAtendidos() {
+        $stmt = $this->conexao->query("SELECT atm.id,atm.prioridade,atm.sintomas,atm.fichaNumero,atm.sinais_vitais,atm.data_entrada,atm.data_saida,atm.atendido,pc.nome,pc.data_nascimento,pc.genero FROM atendimentos atm join pacientes pc ON atm.paciente_id = pc.id WHERE atendido ='Não Atendido' ORDER BY prioridade ,data_entrada DESC");
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    
+    public function listarPacientesAtendidos() {
+        $stmt = $this->conexao->query("SELECT atm.id,atm.prioridade,atm.sintomas,atm.fichaNumero,atm.sinais_vitais,atm.data_entrada,atm.data_saida,atm.atendido,pc.nome,pc.data_nascimento,pc.genero,us.nome as profissional FROM ficha_de_atendimento fa join atendimentos atm ON fa.id_atendimento = atm.id join pacientes pc ON atm.paciente_id = pc.id join usuarios us ON fa.id_usuario = us.id WHERE atendido !='Não Atendido' ORDER BY prioridade DESC ,data_entrada DESC");
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function MeusPacientes($id) {
+        $sql = "SELECT atm.id, atm.prioridade, atm.sintomas, atm.fichaNumero, atm.sinais_vitais, atm.data_entrada, atm.data_saida, atm.atendido, pc.nome, pc.data_nascimento, pc.genero 
+            FROM ficha_de_atendimento fa 
+            JOIN atendimentos atm ON fa.id_atendimento = atm.id 
+            JOIN pacientes pc ON atm.paciente_id = pc.id 
+            WHERE id_usuario = :id_enfermeiro 
+            ORDER BY prioridade DESC, data_entrada DESC";
+        $stmt = $this->conexao->prepare($sql);
+        $stmt->bindParam(':id_enfermeiro', $id, PDO::PARAM_INT);
+        $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
@@ -90,22 +110,12 @@ class Atendimento {
         return $stmt->execute();
     }
 
-    // Marcar paciente como atendido
-    public function marcarAtendido($id) {
-        $stmt = $this->conexao->prepare("UPDATE pacientes SET atendido = 1 WHERE id = ?");
-        return $stmt->execute([$id]);
+   public function darAuta($id_atendimento, $atendido) {
+        $stmt = $this->conexao->prepare("UPDATE `atendimentos` SET `data_saida`=NOW(), `atendido`=:atendido  WHERE id = :id");
+        $stmt->bindParam(':atendido',$atendido, PDO::PARAM_STR);
+        $stmt->bindParam(':id',$id_atendimento, PDO::PARAM_INT);
+        return $stmt->execute();
     }
 
-    // Contar pacientes não atendidos
-    public function contarAguardando() {
-        $stmt = $this->conexao->query("SELECT COUNT(*) FROM pacientes WHERE atendido = 0");
-        return $stmt->fetchColumn();
-    }
-
-    // Listar pacientes por prioridade (Alta)
-    public function listarAltaPrioridade() {
-        $stmt = $this->conexao->query("SELECT * FROM pacientes WHERE prioridade = 'Alta' AND atendido = 0 ORDER BY data_cadastro ASC");
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
 }
 

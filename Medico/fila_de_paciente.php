@@ -12,12 +12,12 @@ $dashboard = new DashboardHelper();
 
 $atendimento = new Atendimento();
 
-if (!$auth->estaAutenticado() || $auth->tipoUsuario() !== 'Recepcionista') {
+if (!$auth->estaAutenticado() || $auth->tipoUsuario() !== 'Medico(a)') {
     header("Location: ../index.php");
     exit;
 }
 
-$titulo = "Painel Recepcionista";
+$titulo = "Lista de Pacientes ";
 
 require_once '../core/header.php';
 
@@ -37,13 +37,9 @@ require_once '../core/menu.php';
           <!-- Content wrapper -->
           <div class="content-wrapper">
             <!-- Content -->
-            <?php
-                $fila_paciente = htmlspecialchars(isset($_GET['atendidos']));
-
-                if ($fila_paciente) {
-            ?>
+            
             <div class="container-xxl flex-grow-1 container-p-y">
-              <h4 class="fw-bold py-3 mb-4">Lista de Pacientes Atendidos</h4>
+              <h4 class="fw-bold py-3 mb-4">Lista de Pacientes no Atendimento</h4>
                 <?php
                     if (isset($_SESSION["sucesso"])) {
                         echo $_SESSION["sucesso"];
@@ -57,10 +53,102 @@ require_once '../core/menu.php';
                 <div class="row">
                     <!-- Basic Layout -->
                     <div class="container-xxl flex-grow-1 container-p-y">
-
+                         <?php
+                            $opcao_de_consulta = htmlspecialchars(isset($_GET['meusPacientes']));
+                            if ($opcao_de_consulta) {
+                        ?>
                         <!-- Basic Bootstrap Table -->
                         <div class="card">
-                            <h5 class="card-header"></h5>
+                            <h5 class="card-header">Meus Pacientes</h5>
+                            <div class="table-responsive text-nowrap">
+                            <table class="table">
+                                <thead>
+                                <tr>
+                                    <th>Ficha Nº</th>
+                                    <th>Nome</th>
+                                    <th>Data de nascimento</th>
+                                    <th>Genero</th>
+                                    <th>Prioridade</th>
+                                    <th>Atendido?</th>
+                                    <th>Entrada</th>
+                                    <th>Saída</th>
+                                    <th>Acção</th>
+                                </tr>
+                                </thead>
+                                <tbody class="table-border-bottom-0">
+                                    <?php
+                                        $opcao_de_consulta = htmlspecialchars($_GET["meusPacientes"]);   
+                                        if (isset($opcao_de_consulta)) {
+                                        $id = $auth->UsuarioID();    
+
+                                        $dados_pacientes_atendimento = $atendimento->MeusPacientes($id);
+                                        foreach ($dados_pacientes_atendimento as $cada_paciente_atendimento) {
+
+                                    ?>
+
+                                    <tr>
+                                        <td><i class="fab fa-angular fa-lg text-danger me-3"></i> <strong><?php echo $cada_paciente_atendimento['fichaNumero']?></strong></td>
+                                        <td><i class="fab fa-angular fa-lg text-danger me-3"></i> <strong><?php echo $cada_paciente_atendimento['nome']?></strong></td>
+                                        <td><?php echo $cada_paciente_atendimento['data_nascimento']?></td>
+                                        <td><?php echo $cada_paciente_atendimento['genero']?></td>
+                                        <td>
+                                            <?php 
+                                                if($cada_paciente_atendimento['prioridade'] == 'Alta')
+                                                {
+                                                    echo '<span class="badge bg-label-danger me-1">'. $cada_paciente_atendimento["prioridade"] .'</span>';
+                                                }elseif ($cada_paciente_atendimento['prioridade'] == 'Média') {
+                                                    echo '<span class="badge bg-label-warning me-1">'. $cada_paciente_atendimento["prioridade"] .'</span>';
+                                                }elseif ($cada_paciente_atendimento['prioridade'] == 'Baixa') {
+                                                    echo '<span class="badge bg-label-primary me-1">'. $cada_paciente_atendimento["prioridade"] .'</span>';
+                                                }elseif ($cada_paciente_atendimento['prioridade'] == 'Não definido') {
+                                                    echo '<span class="badge bg-label-secondary me-1">'. $cada_paciente_atendimento["prioridade"] .'</span>';
+                                                }
+                                            ?>
+                                        </td>
+                                        <td>
+                                            <?php 
+                                            if($cada_paciente_atendimento['atendido'] == 'Atendido')
+                                            {
+                                                echo '<span class="badge bg-label-primary me-1">'. $cada_paciente_atendimento["atendido"] .'</span>';
+                                            }elseif ($cada_paciente_atendimento['atendido'] == 'Em atendimento') {
+                                                echo '<span class="badge bg-label-success me-1">'. $cada_paciente_atendimento["atendido"] .'</span>';
+                                            }elseif ($cada_paciente_atendimento['atendido'] == 'Não Atendido') {
+                                                echo '<span class="badge bg-label-danger me-1">'. $cada_paciente_atendimento["atendido"] .'</span>';
+                                            }
+                                            ?>
+                                        </td>
+                                        <td><?php echo $cada_paciente_atendimento['data_entrada']?></td>
+                                        <td><?php echo $cada_paciente_atendimento['data_saida']?></td>
+                                        <td>
+                                        <div class="dropdown">
+                                            <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
+                                            <i class="bx bx-dots-vertical-rounded"></i>
+                                            </button>
+                                            <div class="dropdown-menu">
+                                            <a class="dropdown-item" href="alterar_dados_paciente.php?id=<?php echo $cada_paciente_atendimento['id']?>"
+                                                ><i class="bx bx-edit-alt me-1"></i> Actualizar</a
+                                            >
+                                            </div>
+                                        </div>
+                                        </td>
+
+                                    </tr>
+                                    <?php }
+                                        }else {
+                                    ?>
+
+                                    <?php 
+                                        }
+                                    ?>
+                                </tbody>
+                            </table>
+                            </div>
+                        </div>
+                        <?php
+                            }else{
+                        ?>
+                        <div class="card">
+                            <h5 class="card-header">Lista de Pacientes no atendimento</h5>
                             <div class="table-responsive text-nowrap">
                             <table class="table">
                                 <thead>
@@ -74,13 +162,17 @@ require_once '../core/menu.php';
                                     <th>Entrada</th>
                                     <th>Saída</th>
                                     <th>Enfermeiro</th>
+                                    <th>Acção</th>
                                 </tr>
                                 </thead>
                                 <tbody class="table-border-bottom-0">
                                     <?php
+
                                         $dados_pacientes_atendimento = $atendimento->listarPacientesAtendidos();
                                         foreach ($dados_pacientes_atendimento as $cada_paciente_atendimento) {
+
                                     ?>
+
                                     <tr>
                                         <td><i class="fab fa-angular fa-lg text-danger me-3"></i> <strong><?php echo $cada_paciente_atendimento['fichaNumero']?></strong></td>
                                         <td><i class="fab fa-angular fa-lg text-danger me-3"></i> <strong><?php echo $cada_paciente_atendimento['nome']?></strong></td>
@@ -107,115 +199,42 @@ require_once '../core/menu.php';
                                                 echo '<span class="badge bg-label-primary me-1">'. $cada_paciente_atendimento["atendido"] .'</span>';
                                             }elseif ($cada_paciente_atendimento['atendido'] == 'Em atendimento') {
                                                 echo '<span class="badge bg-label-success me-1">'. $cada_paciente_atendimento["atendido"] .'</span>';
-                                            }elseif ($cada_paciente_atendimento['atendido'] == 'Não atendido') {
-                                                echo '<span class="badge bg-label-danger me-1">'. $cada_paciente_atendimento["atendido"] .'</span>';
                                             }elseif ($cada_paciente_atendimento['atendido'] == 'Não Atendido') {
                                                 echo '<span class="badge bg-label-danger me-1">'. $cada_paciente_atendimento["atendido"] .'</span>';
-                                            }elseif ($cada_paciente_atendimento['atendido'] == 'Alta médica') {
-                                                echo '<span class="badge bg-label-info me-1">'. $cada_paciente_atendimento["atendido"] .'</span>';
                                             }
                                             ?>
                                         </td>
                                         <td><?php echo $cada_paciente_atendimento['data_entrada']?></td>
                                         <td><?php echo $cada_paciente_atendimento['data_saida']?></td>
                                         <td><?php echo $cada_paciente_atendimento['profissional']?></td>
-                                    </tr>
-                                    <?php }?>
-                                </tbody>
-                            </table>
-                            </div>
-                        </div>
-                        <!--/ Basic Bootstrap Table -->
-                    </div>
-                </div>
-            </div>
-            <?php
-                }else {
-            ?>
-             <div class="container-xxl flex-grow-1 container-p-y">
-              <h4 class="fw-bold py-3 mb-4">Lista de Pacientes em espera</h4>
-                <?php
-                    if (isset($_SESSION["sucesso"])) {
-                        echo $_SESSION["sucesso"];
-                        unset ($_SESSION["sucesso"]); 
-                    }elseif (isset($_SESSION["erro"])) {
-                        echo $_SESSION["erro"];
-                        unset ($_SESSION["erro"]);
-                    }
-                ?>
-                <!-- Basic Layout & Basic with Icons -->
-                <div class="row">
-                    <!-- Basic Layout -->
-                    <div class="container-xxl flex-grow-1 container-p-y">
+                                        <td>
+                                        <div class="dropdown">
+                                            <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
+                                            <i class="bx bx-dots-vertical-rounded"></i>
+                                            </button>
+                                            <div class="dropdown-menu">
+                                            <a class="dropdown-item" href="alterar_dados_paciente.php?id=<?php echo $cada_paciente_atendimento['id']?>&atender"
+                                                ><i class="bx bx-edit-alt me-1"></i> Atender</a
+                                            >
+                                            </div>
+                                        </div>
+                                        </td>
 
-                        <!-- Basic Bootstrap Table -->
-                        <div class="card">
-                            <h5 class="card-header"> </h5>
-                            <div class="table-responsive text-nowrap">
-                            <table class="table">
-                                <thead>
-                                <tr>
-                                    <th>Ficha Nº</th>
-                                    <th>Nome</th>
-                                    <th>Data de nascimento</th>
-                                    <th>Genero</th>
-                                    <th>Prioridade</th>
-                                    <th>Atendido?</th>
-                                    <th>Entrada</th>
-                                    <th>Saída</th>
-                                </tr>
-                                </thead>
-                                <tbody class="table-border-bottom-0">
-                                    <?php
-                                        $dados_pacientes_atendimento = $atendimento->listarPacientesNaoAtendidos();
-                                        foreach ($dados_pacientes_atendimento as $cada_paciente_atendimento) {
-                                    ?>
-                                    <tr>
-                                        <td><i class="fab fa-angular fa-lg text-danger me-3"></i> <strong><?php echo $cada_paciente_atendimento['fichaNumero']?></strong></td>
-                                        <td><i class="fab fa-angular fa-lg text-danger me-3"></i> <strong><?php echo $cada_paciente_atendimento['nome']?></strong></td>
-                                        <td><?php echo $cada_paciente_atendimento['data_nascimento']?></td>
-                                        <td><?php echo $cada_paciente_atendimento['genero']?></td>
-                                        <td>
-                                            <?php 
-                                                if($cada_paciente_atendimento['prioridade'] == 'Alta')
-                                                {
-                                                    echo '<span class="badge bg-label-danger me-1">'. $cada_paciente_atendimento["prioridade"] .'</span>';
-                                                }elseif ($cada_paciente_atendimento['prioridade'] == 'Média') {
-                                                    echo '<span class="badge bg-label-warning me-1">'. $cada_paciente_atendimento["prioridade"] .'</span>';
-                                                }elseif ($cada_paciente_atendimento['prioridade'] == 'Baixa') {
-                                                    echo '<span class="badge bg-label-primary me-1">'. $cada_paciente_atendimento["prioridade"] .'</span>';
-                                                }elseif ($cada_paciente_atendimento['prioridade'] == 'Não definido') {
-                                                    echo '<span class="badge bg-label-secondary me-1">'. $cada_paciente_atendimento["prioridade"] .'</span>';
-                                                }
-                                            ?>
-                                        </td>
-                                        <td>
-                                            <?php 
-                                            if($cada_paciente_atendimento['atendido'] == 'Atendido')
-                                            {
-                                                echo '<span class="badge bg-label-primary me-1">'. $cada_paciente_atendimento["atendido"] .'</span>';
-                                            }elseif ($cada_paciente_atendimento['atendido'] == 'Em atendimento') {
-                                                echo '<span class="badge bg-label-success me-1">'. $cada_paciente_atendimento["atendido"] .'</span>';
-                                            }elseif ($cada_paciente_atendimento['atendido'] == 'Não Atendido') {
-                                                echo '<span class="badge bg-label-danger me-1">'. $cada_paciente_atendimento["atendido"] .'</span>';
-                                            }
-                                            ?>
-                                        </td>
-                                        <td><?php echo $cada_paciente_atendimento['data_entrada']?></td>
-                                        <td><?php echo $cada_paciente_atendimento['data_saida']?></td>
                                     </tr>
-                                    <?php }?>
+                                    <?php 
+                                        }
+                                    ?>
                                 </tbody>
                             </table>
                             </div>
                         </div>
+                        <?php
+                            }
+                        ?>
                         <!--/ Basic Bootstrap Table -->
                     </div>
                 </div>
             </div>
-            <?php
-                }
-            ?>
             <!-- / Content -->
 
 <?php require_once '../core/footer.php';?>

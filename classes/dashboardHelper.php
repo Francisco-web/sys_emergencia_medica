@@ -45,7 +45,7 @@ class DashboardHelper {
 
     // Médico
     public function pacientesAguardandoAtendimento(): int {
-        $stmt = $this->conexao->prepare("SELECT COUNT(*) FROM atendimentos WHERE atendido = 'Não atendido'");
+        $stmt = $this->conexao->prepare("SELECT COUNT(*) FROM atendimentos WHERE atendido = 'Não Atendido'");
         $stmt->execute();
         return (int) $stmt->fetchColumn();
     }

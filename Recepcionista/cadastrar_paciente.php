@@ -36,6 +36,8 @@ if (isset($_POST['btn_salvar']) && $_SERVER["REQUEST_METHOD"] == "POST")
         $_SESSION['erro'] = "<div class='alert alert-danger alert-dismissible' role='alert'>O nome é obrigatório.<button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button></div>";
     }elseif (empty($tipo_documento)) {
        $_SESSION['erro']= "<div class='alert alert-danger alert-dismissible' role='alert'>Tipo de documento é obrigatório.<button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button></div>";
+    }elseif (empty($genero)) {
+       $_SESSION['erro']= "<div class='alert alert-danger alert-dismissible' role='alert'>O genero é obrigatório.<button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button></div>";
     }elseif (empty($documento_numero)) {
         $_SESSION['erro'] = "<div class='alert alert-danger alert-dismissible' role='alert'>Número do documento é obrigatório.<button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button></div>";
     }elseif (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $data_nascimento)) {

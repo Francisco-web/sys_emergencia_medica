@@ -102,6 +102,11 @@
                         <div data-i18n="Fluid">Ver fila de espera</div>
                         </a>
                     </li>
+                    <li class="menu-item">
+                        <a href="fila_de_paciente.php?atendidos" class="menu-link">
+                        <div data-i18n="Fluid">Atendidos</div>
+                        </a>
+                    </li>
                     
                 </ul>
             </li>
@@ -146,11 +151,67 @@
                         <div data-i18n="Fluid">Ver fila de espera</div>
                         </a>
                     </li>
+
+                    <li class="menu-item">
+                        <a href="fila_de_paciente.php?meusPacientes" class="menu-link">
+                        <div data-i18n="Fluid">Meus Pacientes</div>
+                        </a>
+                    </li>
                     
                 </ul>
             </li>
 
             <li class="menu-item">
+              <a href="perfil.php" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-user"></i>
+                <div data-i18n="Boxicons">Perfil</div>
+              </a>
+            </li>
+
+        </ul>
+    
+    <?php
+        }
+    ?>
+
+     <?php
+
+        if ($auth->tipoUsuario() == 'Medico(a)') {
+
+    ?>
+        <ul class="menu-inner py-1">
+            <!-- Dashboard -->
+            <li class="menu-item active">
+                <a href="painel_enfermeiro.php" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-home-circle"></i>
+                <div data-i18n="Analytics">Dashboard</div>
+                </a>
+            </li>
+
+            <!-- Gerir pacientes -->
+            <li class="menu-item">
+                <a href="javascript:void(0);" class="menu-link menu-toggle">
+                <i class="menu-icon tf-icons bx bx-user"></i>
+                <div data-i18n="Layouts">Atendimentos</div>
+                </a>
+
+                <ul class="menu-sub">
+                    <li class="menu-item">
+                        <a href="fila_de_paciente.php?atendimentos" class="menu-link">
+                        <div data-i18n="Fluid">Lista</div>
+                        </a>
+                    </li>
+
+                    <li class="menu-item">
+                        <a href="fila_de_paciente.php?meusPacientes" class="menu-link">
+                        <div data-i18n="Fluid">Meus Pacientes</div>
+                        </a>
+                    </li>
+                    
+                </ul>
+            </li>
+
+             <li class="menu-item">
               <a href="perfil.php" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-user"></i>
                 <div data-i18n="Boxicons">Perfil</div>
