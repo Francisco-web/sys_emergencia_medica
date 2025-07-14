@@ -117,5 +117,17 @@ class Atendimento {
         return $stmt->execute();
     }
 
+    // Buscar paciente por ID
+    public function buscarPacienteAtendido($id) {
+        $stmt = $this->conexao->prepare("SELECT atm.id,pc.id as paciente_id, atm.prioridade, atm.sintomas, atm.fichaNumero, atm.sinais_vitais, atm.data_entrada, atm.data_saida, atm.atendido, pc.nome, pc.data_nascimento, pc.genero, enfermeiro.nome as enfermeiro 
+            FROM ficha_de_atendimento fa 
+            JOIN atendimentos atm ON fa.id_atendimento = atm.id 
+            JOIN pacientes pc ON atm.paciente_id = pc.id 
+            join usuarios enfermeiro ON fa.id_usuario = enfermeiro.id AND enfermeiro.perfil = 'enfermeiro(a)' WHERE atm.id = :id");
+        $stmt->bindParam(':id',$id, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
 }
 

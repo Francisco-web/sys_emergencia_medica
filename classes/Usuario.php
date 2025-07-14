@@ -18,7 +18,7 @@ class Usuario {
 
         }else {
             // Verifica se o número do documento já está cadastrado
-            $check = $this->conexao->prepare("SELECT COUNT(*) FROM pacientes WHERE email = :email");
+            $check = $this->conexao->prepare("SELECT COUNT(*) FROM usuarios WHERE email = :email");
             
             $check->bindParam(':email', $email);
         }
@@ -49,8 +49,8 @@ class Usuario {
     // Criar novo paciente
     public function criar($nome, $telefone,$email,$senha,$perfil):bool {
         
-        $stmt = $this->conexao->prepare("INSERT INTO `pacientes`(`nome`, `data_nascimento`, `genero`, `telefone`, `tipo_documento`, `id_documento`) 
-                                     VALUES (:nome, :data_nascimento, :genero, :telefone, :tipo_documento,:id_documento)");
+        $stmt = $this->conexao->prepare("INSERT INTO `usuarios`(`nome`, `email`, `telefone`, `senha`, `perfil`) 
+                                     VALUES (:nome, :email,:telefone, :senha,:perfil)");
         $stmt->bindParam(':nome',$nome, PDO::PARAM_STR);
         $stmt->bindParam(':senha',$senha, PDO::PARAM_STR);
         $stmt->bindParam(':perfil',$perfil, PDO::PARAM_STR);
@@ -104,13 +104,13 @@ class Usuario {
 
     // Listar todos os pacientes
     public function listar() {
-        $stmt = $this->conexao->query("SELECT * FROM pacientes ORDER BY data_cadastro DESC");
+        $stmt = $this->conexao->query("SELECT * FROM usuarios ORDER BY id DESC");
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     // Deletar paciente
     public function deletar($id) {
-        $stmt = $this->conexao->prepare("DELETE FROM pacientes WHERE id =:id");
+        $stmt = $this->conexao->prepare("DELETE FROM usuarios WHERE id =:id");
         $stmt->bindParam(':id',$id, PDO::PARAM_INT);
         return $stmt->execute();
     }

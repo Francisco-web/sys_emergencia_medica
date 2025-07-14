@@ -120,7 +120,7 @@ if (isset($_POST['btn_actualizar_atendimento']) && $_SERVER["REQUEST_METHOD"] ==
                 
             ?>
             <div class="container-xxl flex-grow-1 container-p-y">
-              <h4 class="fw-bold py-3 mb-4">A realizar Atendimento</h4>
+              <h4 class="fw-bold py-3 mb-4">A realizar Diagnostico</h4>
                 <?php
                     if (isset($_SESSION["sucesso"])) {
                         echo $_SESSION["sucesso"];
@@ -132,7 +132,7 @@ if (isset($_POST['btn_actualizar_atendimento']) && $_SERVER["REQUEST_METHOD"] ==
                     
                     $id = htmlspecialchars( $_GET["id"]);
                     
-                    $verAtendimento = $Atendimento->buscar($id);
+                    $verAtendimento = $Atendimento->buscarPacienteAtendido($id);
 
                     $verPaciente = $paciente->buscar($verAtendimento['paciente_id']);
                 ?>
@@ -142,11 +142,12 @@ if (isset($_POST['btn_actualizar_atendimento']) && $_SERVER["REQUEST_METHOD"] ==
                 <div class="col-xxl">
                   <div class="card mb-4">
                     <div class="card-header d-flex align-items-center justify-content-between">
-                      <h5 class="mb-0">Paciente: <?php echo $verPaciente['nome'] ?></h5>
+                      <h5 class="mb-0">Paciente: <?php echo $verPaciente['nome'] ?><br> Atendico pelo enfermeiro(a): <?php echo $verAtendimento['enfermeiro']?></h5>
                     </div>
                     <div class="card-body">
                         <form method="POST" action="">		
-                            <input type="hidden" name= "id" value="<?php echo $verAtendimento['id'] ?>">
+                            <input type="hidden" name= "id_atendimento" value="<?php echo $verAtendimento['id'] ?>">
+                            <input type="hidden" name= "id_medico" value="<?php echo $auth->UsuarioID(); ?>">
                             <div class="row mb-3">
                                 <label class="col-sm-2 col-form-label" for="basic-default-company">Ficha Número</label>
                             <div class="col-sm-10">
@@ -213,13 +214,13 @@ if (isset($_POST['btn_actualizar_atendimento']) && $_SERVER["REQUEST_METHOD"] ==
                             <div class="row mb-3">
                                 <label class="col-sm-2 col-form-label" for="basic-default-email">sintomas</label>
                                 <div class="col-sm-10">
-                                    <textarea name="sintomas" id="" class="form-control" placeholder="Dor de cabeça, Náuseas, Tontura, Fadiga, Ansiedade,etc..."><?php echo $verAtendimento['sintomas'];?></textarea>
+                                    <textarea name="sintomas" id="" class="form-control" readonly placeholder="Dor de cabeça, Náuseas, Tontura, Fadiga, Ansiedade,etc..."><?php echo $verAtendimento['sintomas'];?></textarea>
                                 </div>
                             </div>
                             <div class="row mb-3">
                                 <label class="col-sm-2 col-form-label" for="basic-default-email">Sinais vitais</label>
                                 <div class="col-sm-10">
-                                    <textarea name="sinais_vitais" id="" class="form-control" placeholder="Temperatura corporal, Frequência cardíaca (batimentos por minuto),Frequência respiratória (respirações por minuto), Pressão arterial, Saturação de oxigênio,etc..."><?php echo $verAtendimento['sinais_vitais'];?></textarea>
+                                    <textarea name="sinais_vitais" id="" class="form-control" readonly placeholder="Temperatura corporal, Frequência cardíaca (batimentos por minuto),Frequência respiratória (respirações por minuto), Pressão arterial, Saturação de oxigênio,etc..."><?php echo $verAtendimento['sinais_vitais'];?></textarea>
                                 </div>
                             </div>
                             <div class="row mb-3">
@@ -240,10 +241,36 @@ if (isset($_POST['btn_actualizar_atendimento']) && $_SERVER["REQUEST_METHOD"] ==
                             <label class="col-sm-2 col-form-label" for="basic-default-phone">Atendido?</label>
                             <div class="col-sm-10">
                                 <select name="atendido" id="" class="form-control phone-mask">
-                                    <option value="Não Atendido" <?php if($verAtendimento['atendido'] == 'Não Atendido'){echo "SELECTED";} ?>>Ainda Não</option>
-                                    <option value="Em atendimento" <?php if($verAtendimento['atendido'] == 'Em atendimento'){echo "SELECTED";} ?>>Em Atendimento</option>
+                                    <option value="Não Atendido" <?php if($verAtendimento['atendido'] == 'Não Atendido'){echo "SELECTED";} ?> >Ainda Não</option>
+                                    <option value="Em atendimento" <?php if($verAtendimento['atendido'] == 'Em atendimento'){echo "SELECTED";} ?> >Em Atendimento</option>
                                 </select>
                             </div>
+                            </div>
+                            <div class="row mb-3">
+                            <label class="col-sm-2 col-form-label" for="basic-default-phone">Diagnostico Médico</label>
+                            </div>
+                             <div class="row mb-3">
+                                <label class="col-sm-2 col-form-label" for="basic-default-email">Dado de Diagnóstico</label>
+                                <div class="col-sm-10">
+                                    <textarea name="diagnostico" id="" class="form-control" placeholder="Dor de cabeça, Náuseas, Tontura, Fadiga, Ansiedade,etc..."><?php echo $verAtendimento['sintomas'];?></textarea>
+                                </div>
+                            </div>
+                             <div class="row mb-3">
+                                <label class="col-sm-2 col-form-label" for="basic-default-email">Destino</label>
+                                <div class="col-sm-10">
+                                    <div class="input-group input-group-merge">
+                                        <select name="destino" class="form-control" id="">
+                                            <option >Seleciona</option>
+                                            <option value="Alta" >Alta</option>
+                                            <option value="Exames Complementares">Exames Complementares</option>
+                                            <option value="Internação">Internação</option>
+                                            <option value="Óbito">Óbito</option>
+                                            <option value="Observação" >Observação</option>
+                                            <option value="Transferência">Transferência</option>
+                                           
+                                        </select>
+                                    </div>
+                                </div>
                             </div>
                             <div class="row justify-content-end">
                             <div class="col-sm-10">

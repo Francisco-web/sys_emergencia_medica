@@ -391,11 +391,6 @@ if (isset($_POST['btn_actualizar_atendimento']) && $_SERVER["REQUEST_METHOD"] ==
                             <div class="row justify-content-end">
                             <div class="col-sm-10">
                                 <button type="submit" name="btn_actualizar_atendimento" class="btn btn-primary">Actualizar</button>
-                                <?PHP
-                                    if($verAtendimento['atendido'] == 'Em atendimento'){
-                                        echo '<button type="submit" name="btn_dar_alta" class="btn btn-info">Dar alta Médica</button>';
-                                    }
-                                ?>
                                 <a class="btn btn-secondary" href="fila_de_paciente.php">Voltar</a>
                             </div>
                             </div>
