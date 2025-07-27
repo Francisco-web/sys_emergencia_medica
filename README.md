@@ -7,11 +7,11 @@ Este projeto tem como objetivo desenvolver um sistema web simples e eficiente pa
 
 Tecnologias Utilizadas:
 
-- PHP 8 (Programação Orientada a Objetos)
-- MySQL
-- FPDF (Geração de relatórios em PDF)
-- Bootstrap 5 template (Interface responsiva e amigável)
-- HTML/CSS/JavaScript (Interatividade básica)
+- PHP 8 (Programação Orientada a Objetos);
+- MySQL;
+- FPDF (Geração de relatórios em PDF);
+- Bootstrap 5 template (Interface responsiva e amigável);
+- HTML/CSS/JavaScript (Interatividade básica).
 
 Perfis de Usuários:
 
@@ -30,19 +30,19 @@ Regras de Negócio:
 
 Funcionalidades:
 
-Autenticação
-Gestão de Pacientes
-Atendimento Médico
-Dashboard por Perfil
-Relatórios (PDF)
+Autenticação;
+Gestão de Pacientes;
+Atendimento Médico;
+Dashboard por Perfil;
+Relatórios (PDF).
 
 Modelo de Dados (Tabelas):
 
-`usuarios`
-`pacientes`
-`atendimentos`
-`diagnosticos`
-`ficha_de_atendimento`
+`usuarios`;
+`pacientes`;
+`atendimentos`;
+`diagnosticos`;
+`ficha_de_atendimento`;
 
 Instalação Local:
 
